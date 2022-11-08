@@ -14,6 +14,7 @@ add_subdirectory(libs/googletest)
 
 set(Headers
     src/arena/players/human_player.hpp
+    src/arena/players/mcs_player.hpp
     src/arena/players/mcts_player.hpp
     src/arena/players/random_action_player.hpp
     src/arena/match.hpp
@@ -28,6 +29,7 @@ set(Headers
     src/evaluators/random_action_evaluator.hpp
     src/games/othello/othello_game.hpp
     src/games/othello/othello_state.hpp
+    src/searchTrees/mcs/mcs.hpp
     src/searchTrees/monteCarlo/mcts.hpp
     src/searchTrees/monteCarlo/node.hpp
     src/searchTrees/monteCarlo/terminal_state.hpp
@@ -35,12 +37,14 @@ set(Headers
 
 set(SourceFiles
     src/arena/players/human_player.cpp
+    src/arena/players/mcs_player.cpp
     src/arena/players/mcts_player.cpp
     src/arena/players/random_action_player.cpp
     src/arena/match.cpp
     src/evaluators/random_action_evaluator.cpp
     src/games/othello/othello_game.cpp
     src/games/othello/othello_state.cpp
+    src/searchTrees/mcs/mcs.cpp
     src/searchTrees/monteCarlo/mcts.cpp
     src/searchTrees/monteCarlo/node.cpp
 )

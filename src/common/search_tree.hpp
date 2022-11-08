@@ -1,3 +1,6 @@
+#ifndef COMMON_SEARCH_TREE_HPP_
+#define COMMON_SEARCH_TREE_HPP_
+
 #include <memory>
 #include <chrono>
 #include <vector>
@@ -38,3 +41,5 @@ namespace common
         virtual ~SearchTree(){};
     };
 } // namespace common
+
+#endif

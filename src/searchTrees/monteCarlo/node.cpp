@@ -143,7 +143,7 @@ namespace searchTrees
 
             std::vector<float> result{};
             result.reserve(n_game_actions_);
-            for (int action; action < n_game_actions_; action++)
+            for (int action = 0; action < n_game_actions_; action++)
             {
                 result.emplace_back(action == best_action ? 1 : 0);
             }
@@ -155,6 +155,7 @@ namespace searchTrees
         float sum_probs = 0;
         for (int action = 0; action < n_game_actions_; action++)
         {
+            // should be na_[action]/n;
             float new_prob = pow(float(na_[action]), 1.0f / temperature);
             sum_probs += new_prob;
             probs_with_temperature.emplace_back(new_prob);

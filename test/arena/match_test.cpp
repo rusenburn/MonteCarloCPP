@@ -17,18 +17,21 @@ class MatchTests : public ::testing::Test
 {
 
 protected:
-    std::shared_ptr<MockPlayer> mocked_player_1_ptr;
-    std::shared_ptr<MockPlayer> mocked_player_2_ptr;
+    MockPlayer* mocked_player_1_ptr;
+    MockPlayer* mocked_player_2_ptr;
     MatchTests()
-        : mocked_player_1_ptr(std::make_shared<MockPlayer>()),
-          mocked_player_2_ptr(std::make_shared<MockPlayer>())
+        : mocked_player_1_ptr(new MockPlayer()),
+          mocked_player_2_ptr(new MockPlayer())
     {
     }
     void SetUp() override
     {
         mocked_game = std::make_shared<MockGame>();
     }
-    void TearDown() override {}
+    void TearDown() override {
+        delete mocked_player_1_ptr;
+        delete mocked_player_2_ptr;
+    }
 };
 
 TEST_F(MatchTests, CanInstantiate)
