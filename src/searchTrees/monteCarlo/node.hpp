@@ -6,7 +6,7 @@
 #include "../../common/state.hpp"
 #include "../../common/evaluator.hpp"
 
-#include "terminal_state.hpp"
+#include "../../common/terminal_status.hpp"
 
 namespace searchTrees
 {
@@ -33,7 +33,7 @@ namespace searchTrees
         // number of times action "a" lost
         std::vector<float> la_;
 
-        TerminalState terminal_;
+        common::TerminalStatus terminal_;
 
         std::vector<float> game_result_;
 

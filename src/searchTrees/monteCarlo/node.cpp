@@ -20,18 +20,18 @@ namespace searchTrees
           wa_(std::vector<float>(n_game_actions, 0.0f)),
           da_(std::vector<float>(n_game_actions, 0.0f)),
           la_(std::vector<float>(n_game_actions, 0.0f)),
-          terminal_(TerminalState::Unknown),
+          terminal_(common::TerminalStatus::Unknown),
           game_result_(std::vector<float>())
     {
     }
 
     std::vector<float> Node::search(common::Evaluator *evaluator_ptr, int minimum_simulations_count, std::chrono::duration<int, std::milli> minimum_duration, float temperature)
     {
-        if (terminal_ == TerminalState::Unknown)
+        if (terminal_ == common::TerminalStatus::Unknown)
         {
-            terminal_ = state_ptr_->isTerminal() ? TerminalState::Done : TerminalState::NotYet;
+            terminal_ = state_ptr_->isTerminal() ? common::TerminalStatus::Done : common::TerminalStatus::NotYet;
         }
-        if (terminal_ == TerminalState::Done)
+        if (terminal_ == common::TerminalStatus::Done)
         {
             throw "Game is over";
         }
@@ -53,11 +53,11 @@ namespace searchTrees
 
     std::vector<float> Node::simulateOne(common::Evaluator *evaluator_ptr)
     {
-        if (terminal_ == TerminalState::Unknown) // first visit check terminal state
+        if (terminal_ == common::TerminalStatus::Unknown) // first visit check terminal state
         {
-            terminal_ = state_ptr_->isTerminal() ? TerminalState::Done : TerminalState::NotYet;
+            terminal_ = state_ptr_->isTerminal() ? common::TerminalStatus::Done : common::TerminalStatus::NotYet;
         }
-        if (terminal_ == TerminalState::Done) // cache terminal state return its reverse
+        if (terminal_ == common::TerminalStatus::Done) // cache terminal state return its reverse
         {
             if (game_result_.size() == 0) // game result is not cached yet , cache it
             {
@@ -248,23 +248,23 @@ namespace searchTrees
                     delete children_[child_idx];
                 }
             }
-            children_.clear();
-            game_result_.clear();
-            actions_probs_.clear();
-            na_.clear();
-            wa_.clear();
-            da_.clear();
-            la_.clear();
-            actions_legality_.clear();
-
-            children_.shrink_to_fit();
-            actions_probs_.shrink_to_fit();
-            game_result_.shrink_to_fit();
-            na_.shrink_to_fit();
-            wa_.shrink_to_fit();
-            da_.shrink_to_fit();
-            la_.shrink_to_fit();
-            actions_legality_.shrink_to_fit();
         }
+        children_.clear();
+        game_result_.clear();
+        actions_probs_.clear();
+        na_.clear();
+        wa_.clear();
+        da_.clear();
+        la_.clear();
+        actions_legality_.clear();
+
+        children_.shrink_to_fit();
+        actions_probs_.shrink_to_fit();
+        game_result_.shrink_to_fit();
+        na_.shrink_to_fit();
+        wa_.shrink_to_fit();
+        da_.shrink_to_fit();
+        la_.shrink_to_fit();
+        actions_legality_.shrink_to_fit();
     }
 } // namespace searchTrees

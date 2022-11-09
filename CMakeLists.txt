@@ -17,6 +17,7 @@ set(Headers
     src/arena/players/mcs_player.hpp
     src/arena/players/mcts_player.hpp
     src/arena/players/random_action_player.hpp
+    src/arena/players/uct_player.hpp
     src/arena/match.hpp
     src/common/evaluation.hpp
     src/common/evaluator.hpp
@@ -26,13 +27,16 @@ set(Headers
     src/common/player.hpp
     src/common/search_tree.hpp
     src/common/state.hpp
+    src/common/terminal_status.hpp
     src/evaluators/random_action_evaluator.hpp
     src/games/othello/othello_game.hpp
     src/games/othello/othello_state.hpp
     src/searchTrees/mcs/mcs.hpp
     src/searchTrees/monteCarlo/mcts.hpp
     src/searchTrees/monteCarlo/node.hpp
-    src/searchTrees/monteCarlo/terminal_state.hpp
+    src/searchTrees/uct/uct_node.hpp
+    src/searchTrees/uct/uct.hpp
+    
 )
 
 set(SourceFiles
@@ -40,6 +44,7 @@ set(SourceFiles
     src/arena/players/mcs_player.cpp
     src/arena/players/mcts_player.cpp
     src/arena/players/random_action_player.cpp
+    src/arena/players/uct_player.cpp
     src/arena/match.cpp
     src/evaluators/random_action_evaluator.cpp
     src/games/othello/othello_game.cpp
@@ -47,6 +52,8 @@ set(SourceFiles
     src/searchTrees/mcs/mcs.cpp
     src/searchTrees/monteCarlo/mcts.cpp
     src/searchTrees/monteCarlo/node.cpp
+    src/searchTrees/uct/uct_node.cpp
+    src/searchTrees/uct/uct.cpp
 )
 
 
