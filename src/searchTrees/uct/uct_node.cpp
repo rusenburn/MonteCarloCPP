@@ -16,8 +16,7 @@ namespace searchTrees
           n_(0),
           qsa_(n_game_actions),
           nsa_(n_game_actions)
-    {
-    }
+    {}
 
     void UctNode::search(int minimum_simulations, std::chrono::duration<int, std::milli> minimum_duration, float uct, float temperature, std::vector<float> &out_actions_probs)
     {
@@ -55,6 +54,7 @@ namespace searchTrees
             if (!is_game_result_cached_)
             {
                 game_result_ = state_ptr_->getResult();
+                is_game_result_cached_ = true;
             }
             // reverse it
             if (game_result_ == common::GameResult::win)
