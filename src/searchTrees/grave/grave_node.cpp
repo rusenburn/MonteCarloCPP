@@ -164,7 +164,7 @@ namespace searchTrees
             }
             if (iter > 0)
             {
-                // dont delete first state
+                // don't delete first state
                 delete rollout_state_ptr;
             }
             rollout_state_ptr = new_state;

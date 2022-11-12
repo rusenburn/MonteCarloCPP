@@ -17,7 +17,7 @@ namespace searchTrees
             throw "State is done";
         }
         GraveNode node(state_ptr, n_game_actions_);
-        auto t_end = std::chrono::high_resolution_clock::now()+ std::chrono::duration<int,std::milli>(5000);
+        auto t_end = std::chrono::high_resolution_clock::now()+ minimum_duration;
 
         std::vector<int> out_our_actions{};
         std::vector<int> out_their_actions{};
@@ -41,7 +41,7 @@ namespace searchTrees
         int action = node.selectMove(&node, b_squared_);
         std::vector<float> action_probs(n_game_actions_);
         action_probs[action] = 1;
-        std::cout<< i << std::endl;
+        // std::cout<< i << std::endl;
         return action_probs;
     }
 } // namespace searchTrees

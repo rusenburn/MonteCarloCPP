@@ -10,7 +10,7 @@ namespace arena
           player2_ptr_(player_2_ptr),
           n_sets_(n_sets),
           render_(render),
-          scores_(std::vector<int>(3,0)) {}
+          scores_(std::vector<int>(3, 0)) {}
 
     std::vector<int> Match::start()
     {
@@ -24,6 +24,7 @@ namespace arena
 
             // switch starting player
             starting_player = 1 - starting_player;
+            std::cout << "[ " << scores_[0] << " ," << scores_[1] << " ," << scores_[2] << " ]" << std::endl;
         }
         return scores_;
     }
@@ -88,7 +89,7 @@ namespace arena
         {
             state_ptr->render();
         }
-        delete state_ptr; // state_ptr and new_state_ptr are the same 
+        delete state_ptr; // state_ptr and new_state_ptr are the same
         return result;
     }
 } // namespace arena
