@@ -1,60 +1,30 @@
-#include "mcrave_node.hpp"
+#include <math.h>
 
+#include "grave_node.hpp"
 namespace searchTrees
 {
-
-    McraveNode::McraveNode(common::State *state_ptr, int n_game_actions)
-        : state_ptr_(state_ptr), n_game_actions_(n_game_actions), terminal_(common::TerminalStatus::Unknown),
-          is_leaf_node(true),
+    GraveNode::GraveNode(common::State *state_ptr, int n_game_actions)
+        : state_ptr_(state_ptr),
+          n_game_actions_(n_game_actions),
+          terminal_(common::TerminalStatus::Unknown),
+          is_leaf_node_(true),
           is_game_result_cached_(false),
-          game_result_(common::GameResult::loss),
-          children_(std::vector<McraveNode *>(n_game_actions, nullptr)),
-          n_sa_(std::vector<int>(n_game_actions)),
+          children_(std::vector<GraveNode *>(n_game_actions)),
+          n_(0),
+          wsa_(std::vector<float>(n_game_actions)),
           nsa_(std::vector<int>(n_game_actions)),
-          q_sa_(std::vector<float>(n_game_actions)),
-          qsa_(std::vector<float>(n_game_actions)),
+          amaf_wsa_(std::vector<float>(n_game_actions)),
+          amaf_nsa_(std::vector<int>(n_game_actions)),
           actions_legality_(std::vector<int>())
     {
         heuristic();
     }
-    void McraveNode::search(int minimum_simulations_count, std::chrono::duration<int, std::milli> minimum_duration, float b, std::vector<float> &out_actions_probs)
-    {
-
-        if (terminal_ == common::TerminalStatus::Unknown)
-        {
-            terminal_ = state_ptr_->isTerminal() ? common::TerminalStatus::Done : common::TerminalStatus::NotYet;
-        }
-        if (terminal_ == common::TerminalStatus::Done)
-        {
-            throw "State is done";
-        }
-        auto t_start =std::chrono::high_resolution_clock::now();
-        auto t_end = t_start + minimum_duration;
-        std::vector<int> out_our_actions{};
-        std::vector<int> out_their_actions{};
-        int z;
-        int i=0;
-        for (; i < minimum_simulations_count; i++)
-        {
-            z = simulateOne(0, out_their_actions, out_our_actions);
-            out_our_actions.clear();
-            out_their_actions.clear();
-        }
-
-        while (t_end > std::chrono::high_resolution_clock::now())
-        {
-            z = simulateOne(0, out_their_actions, out_our_actions);
-            out_our_actions.clear();
-            out_their_actions.clear();
-            i++;
-        }
-
-        int action = selectMove(b);
-        out_actions_probs.resize(n_game_actions_);
-        out_actions_probs[action] = 1;
-    }
-
-    float McraveNode::simulateOne(float b, std::vector<int> &out_our_actions, std::vector<int> &out_their_actions)
+    float GraveNode::simulateOne(GraveNode *amaf_node_ptr,
+                                 bool save_illegal_amaf_actions,
+                                 std::vector<int> &out_our_actions,
+                                 std::vector<int> &out_opponent_actions,
+                                 const int &amaf_min_ref_count,
+                                 const float &b_square_ref)
     {
         if (terminal_ == common::TerminalStatus::Unknown)
         {
@@ -67,7 +37,6 @@ namespace searchTrees
                 game_result_ = state_ptr_->getResult();
                 is_game_result_cached_ = true;
             }
-
             if (game_result_ == common::GameResult::win)
             {
                 return -1.0f;
@@ -81,77 +50,83 @@ namespace searchTrees
                 return 1.0f;
             }
         }
-
-        if (is_leaf_node) // leaf node -> first visit
+        if (is_leaf_node_) // leaf node first non terminal visit
         {
             if (actions_legality_.size() == 0)
             {
                 actions_legality_ = state_ptr_->getActionsLegality();
             }
-            float z = simDefault(out_our_actions, out_their_actions);
-            is_leaf_node = false;
+            float z = playout(out_our_actions, out_opponent_actions);
+            is_leaf_node_ = false;
+
             for (int &action : out_our_actions)
             {
-                if (actions_legality_[action] == 0)
+                if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
                     continue;
-                n_sa_[action]++;
-                q_sa_[action] += (z - q_sa_[action]) / n_sa_[action];
+
+                amaf_nsa_[action]++;
+                amaf_wsa_[action] += z;
+            }
+
+            for (int &action : out_opponent_actions)
+            {
+                if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
+                    continue;
+                amaf_nsa_[action]++;
+                amaf_wsa_[action] -= z;
             }
             return -z;
         }
-
-        int best_action = selectMove(b);
-
-        if (children_[best_action] == nullptr)
+        if (n_ >= amaf_min_ref_count)
         {
-            auto new_state_ptr = state_ptr_->step(best_action);
-            McraveNode *new_node_ptr = new McraveNode(new_state_ptr, n_game_actions_);
+            amaf_node_ptr = this;
+        }
+        int best_action = selectMove(amaf_node_ptr, b_square_ref);
+
+        GraveNode *new_node_ptr = children_[best_action];
+        if (new_node_ptr == nullptr)
+        {
+            common::State *new_state_ptr = state_ptr_->step(best_action);
+            new_node_ptr = new GraveNode(new_state_ptr, n_game_actions_);
             children_[best_action] = new_node_ptr;
         }
-        McraveNode *new_node_ptr = children_[best_action];
 
-        float z = new_node_ptr->simulateOne(b, out_their_actions, out_our_actions);
-
-        for (int &action : out_our_actions)
-        {
-            if (actions_legality_[action] == 0)
-                continue;
-            n_sa_[action]++;
-            q_sa_[action] += (z - q_sa_[action]) / n_sa_[action];
-        }
+        float z = new_node_ptr->simulateOne(amaf_node_ptr, save_illegal_amaf_actions, out_opponent_actions, out_our_actions, amaf_min_ref_count, b_square_ref);
         out_our_actions.push_back(best_action);
-
+        n_++;
         nsa_[best_action]++;
-        qsa_[best_action] += (z - qsa_[best_action]) / nsa_[best_action];
+        wsa_[best_action] += z;
         return -z;
     }
 
-    int McraveNode::selectMove(float b)
+    int GraveNode::selectMove(GraveNode *amaf_node_ptr, const float &b_square_ref)
     {
-        float max_eval = -std::numeric_limits<float>::infinity();
-        float best_action = -1;
+        int best_action = -1;
+        float best_value = -std::numeric_limits<float>::infinity();
         for (int action = 0; action < n_game_actions_; action++)
         {
             if (actions_legality_[action] == 0)
-                continue;
-
-            float beta = n_sa_[action] / float(nsa_[action] + n_sa_[action] + 4 * b * b * nsa_[action] * n_sa_[action] + float(1e-8));
-
-            float eval = (1 - beta) * qsa_[action] + beta * q_sa_[action];
-            if (eval > max_eval)
             {
-                max_eval = eval;
+                continue;
+            }
+            float w = wsa_[action];
+            float p = nsa_[action];
+            float wa = amaf_node_ptr ? amaf_wsa_[action] : 0.0f;
+            float pa = amaf_node_ptr ? amaf_nsa_[action] : 1e8f;
+            float beta_action = pa / (pa + p + b_square_ref * pa * p);
+            float amaf = wa / (pa + 1e8f);
+            float mean = w / (p + 1e8f);
+            float value = (1.0f - beta_action) * mean + beta_action * amaf;
+            if (value > best_value)
+            {
+                best_value = value;
                 best_action = action;
             }
-        }
-        if (best_action == -1)
-        {
-            throw "best action is -1";
         }
         return best_action;
     }
 
-    float McraveNode::simDefault(std::vector<int> &out_our_actions, std::vector<int> &out_their_actions)
+    float GraveNode::playout(std::vector<int> &out_our_actions, std::vector<int> &out_opponent_actions)
     {
         if (terminal_ != common::TerminalStatus::NotYet)
         {
@@ -166,9 +141,9 @@ namespace searchTrees
             std::vector<int> rollout_actions_legality = rollout_state_ptr->getActionsLegality();
 
             int n_legal_actions = 0;
-            for (int i = 0; i < n_game_actions_; i++)
+            for (int action = 0; action < n_game_actions_; action++)
             {
-                n_legal_actions += rollout_actions_legality[i];
+                n_legal_actions += rollout_actions_legality[action];
             }
 
             int random_legal_action_idx = rand() % n_legal_actions;
@@ -185,7 +160,7 @@ namespace searchTrees
             }
             else
             {
-                out_their_actions.push_back(random_action);
+                out_opponent_actions.push_back(random_action);
             }
             if (iter > 0)
             {
@@ -224,7 +199,7 @@ namespace searchTrees
         // relative to the caller 0
         return z;
     }
-    void McraveNode::heuristic()
+    void GraveNode::heuristic()
     {
         if (terminal_ == common::TerminalStatus::Unknown)
         {
@@ -238,19 +213,19 @@ namespace searchTrees
         {
             actions_legality_ = state_ptr_->getActionsLegality();
         }
+
         for (int action = 0; action < n_game_actions_; action++)
         {
             if (actions_legality_[action] == 0)
                 continue;
 
-            // TODO: change these
-            qsa_[action] = 0;
-            n_sa_[action] = 0;
-            q_sa_[action] = 0;
-            n_sa_[action] = 50;
+            wsa_[action] = 0;
+            nsa_[action] = 0;
+            amaf_wsa_[action] = 0;
+            amaf_nsa_[action] = 50;
         }
     }
-    McraveNode::~McraveNode()
+    GraveNode::~GraveNode()
     {
         if (children_.size() != 0)
         {
@@ -267,4 +242,4 @@ namespace searchTrees
             }
         }
     }
-} // namespace searchTrees
+} // namespace searctTrees

@@ -6,13 +6,14 @@ project(${This} C CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+# set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 enable_testing()
 
 add_subdirectory(libs/googletest)
 
 
 set(Headers
+    src/arena/players/grave_player.hpp
     src/arena/players/human_player.hpp
     src/arena/players/mcrave_player.hpp
     src/arena/players/mcs_player.hpp
@@ -32,6 +33,8 @@ set(Headers
     src/evaluators/random_action_evaluator.hpp
     src/games/othello/othello_game.hpp
     src/games/othello/othello_state.hpp
+    src/searchTrees/grave/grave_node.hpp
+    src/searchTrees/grave/grave.hpp
     src/searchTrees/mcrave/mcrave_node.hpp
     src/searchTrees/mcrave/mcrave.hpp
     src/searchTrees/mcs/mcs.hpp
@@ -43,6 +46,7 @@ set(Headers
 )
 
 set(SourceFiles
+    src/arena/players/grave_player.cpp
     src/arena/players/human_player.cpp
     src/arena/players/mcrave_player.cpp
     src/arena/players/mcs_player.cpp
@@ -53,6 +57,8 @@ set(SourceFiles
     src/evaluators/random_action_evaluator.cpp
     src/games/othello/othello_game.cpp
     src/games/othello/othello_state.cpp
+    src/searchTrees/grave/grave_node.cpp
+    src/searchTrees/grave/grave.cpp
     src/searchTrees/mcrave/mcrave_node.cpp
     src/searchTrees/mcrave/mcrave.cpp
     src/searchTrees/mcs/mcs.cpp
