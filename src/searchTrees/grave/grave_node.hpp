@@ -38,6 +38,7 @@ namespace searchTrees
 
         std::vector<int> actions_legality_;
         void heuristic();
+        void  update_amaf(float our_score,const std::vector<int> &our_actions_ref,const std::vector<int> &opponents_actions_ref, int depth, bool save_illegal_amaf_actions);
 
     protected:
         // named playout in the paper
@@ -53,7 +54,7 @@ namespace searchTrees
                           std::vector<int> &out_opponent_actions,
                           const int &amaf_min_ref_count,
                           const float &b_square_ref);
-        int selectMove(GraveNode *amaf_node_ptr, int depth,const float &b_square_ref);
+        int selectMove(GraveNode *amaf_node_ptr, int depth, const float &b_square_ref);
     };
 
 } // namespace searchTrees

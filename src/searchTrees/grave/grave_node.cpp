@@ -62,37 +62,38 @@ namespace searchTrees
             float z = playout(out_our_actions, out_opponent_actions);
             is_leaf_node_ = false;
 
-            for (int &action : out_our_actions)
-            {
-                if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
-                    continue;
-                if (depth % 2 == 0)
-                {
-                    amaf_nsa_player_0[action]++;
-                    amaf_wsa_player_0[action] += z;
-                }
-                else
-                {
-                    amaf_nsa_player_1[action]++;
-                    amaf_wsa_player_1[action] += z;
-                }
-            }
+            update_amaf(z, out_our_actions, out_opponent_actions, depth, save_illegal_amaf_actions);
+            // for (int &action : out_our_actions)
+            // {
+            //     if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
+            //         continue;
+            //     if (depth % 2 == 0)
+            //     {
+            //         amaf_nsa_player_0[action]++;
+            //         amaf_wsa_player_0[action] += z;
+            //     }
+            //     else
+            //     {
+            //         amaf_nsa_player_1[action]++;
+            //         amaf_wsa_player_1[action] += z;
+            //     }
+            // }
 
-            for (int &action : out_opponent_actions)
-            {
-                if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
-                    continue;
-                if (depth % 2 == 0)
-                {
-                    amaf_nsa_player_1[action]++;
-                    amaf_wsa_player_1[action] -= z;
-                }
-                else
-                {
-                    amaf_nsa_player_0[action]++;
-                    amaf_wsa_player_0[action] -= z;
-                }
-            }
+            // for (int &action : out_opponent_actions)
+            // {
+            //     if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
+            //         continue;
+            //     if (depth % 2 == 0)
+            //     {
+            //         amaf_nsa_player_1[action]++;
+            //         amaf_wsa_player_1[action] -= z;
+            //     }
+            //     else
+            //     {
+            //         amaf_nsa_player_0[action]++;
+            //         amaf_wsa_player_0[action] -= z;
+            //     }
+            // }
             return -z;
         }
         if (n_ >= amaf_min_ref_count)
@@ -110,6 +111,9 @@ namespace searchTrees
         }
 
         float z = new_node_ptr->simulateOne(amaf_node_ptr, save_illegal_amaf_actions, depth + 1, out_opponent_actions, out_our_actions, amaf_min_ref_count, b_square_ref);
+
+        update_amaf(z,out_our_actions,out_opponent_actions,depth,save_illegal_amaf_actions);
+
         out_our_actions.push_back(best_action);
         n_++;
         nsa_[best_action]++;
@@ -130,15 +134,15 @@ namespace searchTrees
             float w = wsa_[action];
             float p = nsa_[action];
             float wa = 0.0f;
-            float pa = 1e8f;
+            float pa = 1e-8f;
             if (amaf_node_ptr != nullptr)
             {
                 wa = depth % 2 == 0 ? amaf_wsa_player_0[action] : amaf_wsa_player_1[action];
                 pa = depth % 2 == 0 ? amaf_nsa_player_0[action] : amaf_nsa_player_1[action];
             }
             float beta_action = pa / (pa + p + b_square_ref * pa * p);
-            float amaf = wa / (pa + 1e8f);
-            float mean = w / (p + 1e8f);
+            float amaf = wa / (pa + 1e-8f);
+            float mean = w / (p + 1e-8f);
             float value = (1.0f - beta_action) * mean + beta_action * amaf;
             if (value > best_value)
             {
@@ -239,8 +243,8 @@ namespace searchTrees
 
         for (int action = 0; action < n_game_actions_; action++)
         {
-            if (actions_legality_[action] == 0)
-                continue;
+            // if (actions_legality_[action] == 0)
+            //         continue;
 
             wsa_[action] = 0;
             nsa_[action] = 0;
@@ -248,6 +252,41 @@ namespace searchTrees
             amaf_nsa_player_0[action] = 50;
             amaf_wsa_player_1[action] = 0;
             amaf_nsa_player_1[action] = 50;
+        }
+    }
+
+    void GraveNode::update_amaf(float our_score,const std::vector<int> &our_actions_ref,const std::vector<int> &opponent_actions_ref, int depth, bool save_illegal_amaf_actions)
+    {
+        for (int action : our_actions_ref)
+        {
+            if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
+                continue;
+            if (depth % 2 == 0)
+            {
+                amaf_nsa_player_0[action]++;
+                amaf_wsa_player_0[action] += our_score;
+            }
+            else
+            {
+                amaf_nsa_player_1[action]++;
+                amaf_wsa_player_1[action] += our_score;
+            }
+        }
+
+        for (int action : opponent_actions_ref)
+        {
+            if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
+                continue;
+            if (depth % 2 == 0)
+            {
+                amaf_nsa_player_1[action]++;
+                amaf_wsa_player_1[action] -= our_score;
+            }
+            else
+            {
+                amaf_nsa_player_0[action]++;
+                amaf_wsa_player_0[action] -= our_score;
+            }
         }
     }
     GraveNode::~GraveNode()
