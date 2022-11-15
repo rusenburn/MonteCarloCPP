@@ -27,7 +27,7 @@ int main()
     auto g = games::OthelloGame();
     // arena::RandomActionPlayer p1{g.getActionsCount()};
     // arena::HumanPlayer p1{};
-    auto d = std::chrono::duration<int, std::milli>(500);
+    auto d = std::chrono::duration<int, std::milli>(2000);
     auto n_sims = 1;
     // arena::McRavePlayer p1(g.getActionsCount(), n_sims, d,0.12f);
     // arena::MCSPlayer p1{g.getActionsCount(), n_sims, d, 0, 1.0f};
@@ -35,14 +35,14 @@ int main()
     // evaluators::RandomActionEvaluator p1_eval{};
     // arena::MCTSPlayer p1(&p1_eval, g.getActionsCount(), n_sims, d, 1.0f, 1.0f);
 
-    // arena::GravePlayer p1(g.getActionsCount(), n_sims, d, 13, 0.000005f, true);
+    // arena::GravePlayer p1(g.getActionsCount(), n_sims, d, 10, 0.02f, true);
     // d = std::chrono::duration<int, std::milli>(0);
     // evaluators::RandomActionEvaluator p2_eval{};
     // arena::MCTSPlayer p2(&p2_eval, g.getActionsCount(), n_sims, d, 1.0f, 1.0f);
 
     // arena::MCSPlayer p2{g.getActionsCount(), n_sims, d, 1.0f, 2.0f};
     // arena::McRavePlayer p2(g.getActionsCount(), n_sims, d, 0.1f);
-    arena::GravePlayer p2(g.getActionsCount(), n_sims, d, 10, 0.05f, true);
+    arena::GravePlayer p2(g.getActionsCount(), n_sims, d, 10, 0.001f, true);
     // arena::RandomActionPlayer p2(g.getActionsCount());
     arena::Match m = arena::Match(game_fn, &p1, &p2, 10, false);
     auto score = m.start();

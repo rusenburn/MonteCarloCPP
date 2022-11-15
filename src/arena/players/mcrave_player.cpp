@@ -2,17 +2,18 @@
 #include "../../searchTrees/mcrave/mcrave.hpp"
 namespace arena
 {
-    McRavePlayer::McRavePlayer(int n_game_actions, int n_sims, std::chrono::duration<int, std::milli> duration,float b)
+    McRavePlayer::McRavePlayer(int n_game_actions, int n_sims, std::chrono::duration<int, std::milli> duration, float b)
         : n_game_actions_(n_game_actions),
           n_sims_(n_sims),
           duration_(duration),
           b_(b)
 
-    {}
+    {
+    }
 
     int McRavePlayer::chooseAction(common::State *state_ptr)
     {
-        searchTrees::Mcrave mcrave(n_game_actions_,b_);
+        searchTrees::Mcrave mcrave(n_game_actions_, b_);
         auto actions_probs = mcrave.search(state_ptr, n_sims_, duration_, 1.0f);
 
         float p = rand() / static_cast<float>(RAND_MAX + 1);

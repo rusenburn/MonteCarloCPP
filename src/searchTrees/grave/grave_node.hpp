@@ -24,14 +24,21 @@ namespace searchTrees
         // total visits for action "a"
         std::vector<int> nsa_;
 
-        // amaf total score for action "a"
-        std::vector<float> amaf_wsa_;
+        // player 0 amaf total score for action "a"
+        std::vector<float> amaf_wsa_player_0;
 
-        // amaf total visits for action "a"
-        std::vector<int> amaf_nsa_;
+        // player 0 amaf total visits for action "a"
+        std::vector<int> amaf_nsa_player_0;
+
+        // player 1 amaf total score for action "a"
+        std::vector<float> amaf_wsa_player_1;
+
+        // player 1 amaf total score for action "a"
+        std::vector<int> amaf_nsa_player_1;
 
         std::vector<int> actions_legality_;
         void heuristic();
+
     protected:
         // named playout in the paper
         virtual float playout(std::vector<int> &out_our_actions, std::vector<int> &out_opponent_actions);
@@ -39,8 +46,14 @@ namespace searchTrees
     public:
         GraveNode(common::State *state_ptr, int n_game_actions);
         ~GraveNode();
-        float simulateOne(GraveNode *amaf_node_ptr, bool save_illegal_amaf_actions, std::vector<int> &out_our_actions, std::vector<int> &out_opponent_actions, const int &amaf_min_ref_count, const float &b_square_ref);
-        int selectMove(GraveNode *amaf_node_ptr, const float &b_square_ref);
+        float simulateOne(GraveNode *amaf_node_ptr,
+                          bool save_illegal_amaf_actions,
+                          int depth,
+                          std::vector<int> &out_our_actions,
+                          std::vector<int> &out_opponent_actions,
+                          const int &amaf_min_ref_count,
+                          const float &b_square_ref);
+        int selectMove(GraveNode *amaf_node_ptr, int depth,const float &b_square_ref);
     };
 
 } // namespace searchTrees

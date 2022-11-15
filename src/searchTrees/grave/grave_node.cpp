@@ -13,14 +13,17 @@ namespace searchTrees
           n_(0),
           wsa_(std::vector<float>(n_game_actions)),
           nsa_(std::vector<int>(n_game_actions)),
-          amaf_wsa_(std::vector<float>(n_game_actions)),
-          amaf_nsa_(std::vector<int>(n_game_actions)),
+          amaf_wsa_player_0(std::vector<float>(n_game_actions)),
+          amaf_nsa_player_0(std::vector<int>(n_game_actions)),
+          amaf_wsa_player_1(std::vector<float>(n_game_actions)),
+          amaf_nsa_player_1(std::vector<int>(n_game_actions)),
           actions_legality_(std::vector<int>())
     {
         heuristic();
     }
     float GraveNode::simulateOne(GraveNode *amaf_node_ptr,
                                  bool save_illegal_amaf_actions,
+                                 int depth,
                                  std::vector<int> &out_our_actions,
                                  std::vector<int> &out_opponent_actions,
                                  const int &amaf_min_ref_count,
@@ -63,17 +66,32 @@ namespace searchTrees
             {
                 if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
                     continue;
-
-                amaf_nsa_[action]++;
-                amaf_wsa_[action] += z;
+                if (depth % 2 == 0)
+                {
+                    amaf_nsa_player_0[action]++;
+                    amaf_wsa_player_0[action] += z;
+                }
+                else
+                {
+                    amaf_nsa_player_1[action]++;
+                    amaf_wsa_player_1[action] += z;
+                }
             }
 
             for (int &action : out_opponent_actions)
             {
                 if (!save_illegal_amaf_actions && actions_legality_[action] == 0)
                     continue;
-                amaf_nsa_[action]++;
-                amaf_wsa_[action] -= z;
+                if (depth % 2 == 0)
+                {
+                    amaf_nsa_player_1[action]++;
+                    amaf_wsa_player_1[action] -= z;
+                }
+                else
+                {
+                    amaf_nsa_player_0[action]++;
+                    amaf_wsa_player_0[action] -= z;
+                }
             }
             return -z;
         }
@@ -81,7 +99,7 @@ namespace searchTrees
         {
             amaf_node_ptr = this;
         }
-        int best_action = selectMove(amaf_node_ptr, b_square_ref);
+        int best_action = selectMove(amaf_node_ptr, depth, b_square_ref);
 
         GraveNode *new_node_ptr = children_[best_action];
         if (new_node_ptr == nullptr)
@@ -91,7 +109,7 @@ namespace searchTrees
             children_[best_action] = new_node_ptr;
         }
 
-        float z = new_node_ptr->simulateOne(amaf_node_ptr, save_illegal_amaf_actions, out_opponent_actions, out_our_actions, amaf_min_ref_count, b_square_ref);
+        float z = new_node_ptr->simulateOne(amaf_node_ptr, save_illegal_amaf_actions, depth + 1, out_opponent_actions, out_our_actions, amaf_min_ref_count, b_square_ref);
         out_our_actions.push_back(best_action);
         n_++;
         nsa_[best_action]++;
@@ -99,7 +117,7 @@ namespace searchTrees
         return -z;
     }
 
-    int GraveNode::selectMove(GraveNode *amaf_node_ptr, const float &b_square_ref)
+    int GraveNode::selectMove(GraveNode *amaf_node_ptr, int depth, const float &b_square_ref)
     {
         int best_action = -1;
         float best_value = -std::numeric_limits<float>::infinity();
@@ -111,8 +129,13 @@ namespace searchTrees
             }
             float w = wsa_[action];
             float p = nsa_[action];
-            float wa = amaf_node_ptr ? amaf_wsa_[action] : 0.0f;
-            float pa = amaf_node_ptr ? amaf_nsa_[action] : 1e8f;
+            float wa = 0.0f;
+            float pa = 1e8f;
+            if (amaf_node_ptr != nullptr)
+            {
+                wa = depth % 2 == 0 ? amaf_wsa_player_0[action] : amaf_wsa_player_1[action];
+                pa = depth % 2 == 0 ? amaf_nsa_player_0[action] : amaf_nsa_player_1[action];
+            }
             float beta_action = pa / (pa + p + b_square_ref * pa * p);
             float amaf = wa / (pa + 1e8f);
             float mean = w / (p + 1e8f);
@@ -221,8 +244,10 @@ namespace searchTrees
 
             wsa_[action] = 0;
             nsa_[action] = 0;
-            amaf_wsa_[action] = 0;
-            amaf_nsa_[action] = 50;
+            amaf_wsa_player_0[action] = 0;
+            amaf_nsa_player_0[action] = 50;
+            amaf_wsa_player_1[action] = 0;
+            amaf_nsa_player_1[action] = 50;
         }
     }
     GraveNode::~GraveNode()
