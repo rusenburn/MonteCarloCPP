@@ -13,6 +13,7 @@ namespace common
     {
     public:
         virtual Evaluation evaluate(State *state_ptr) = 0;
+        virtual ~Evaluator(){};
     };
 } // namespace common
 

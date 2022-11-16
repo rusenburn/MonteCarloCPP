@@ -25,6 +25,7 @@ namespace common
 
         // render the game
         virtual void render() = 0;
+        virtual ~Game(){};
     };
 } // namespace common
 

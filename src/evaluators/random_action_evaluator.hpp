@@ -7,7 +7,9 @@ namespace evaluators
 {
     class RandomActionEvaluator : public common::Evaluator
     {
+    public:
         common::Evaluation evaluate(common::State *state_ptr) override;
+        ~RandomActionEvaluator(){};
     };
 } // namespace evaluators
 

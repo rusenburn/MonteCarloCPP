@@ -10,6 +10,7 @@ namespace common
     {
     public:
         virtual int chooseAction(State *state_ptr) = 0;
+        virtual ~Player(){}
     };
 } // namespace common
 
