@@ -32,7 +32,7 @@ namespace searchTrees
         auto t_end = t_start + minimum_duration;
         std::vector<int> out_our_actions{};
         std::vector<int> out_their_actions{};
-        int z;
+        float z;
         int i=0;
         for (; i < minimum_simulations_count; i++)
         {
@@ -129,7 +129,7 @@ namespace searchTrees
     int McraveNode::selectMove(float b)
     {
         float max_eval = -std::numeric_limits<float>::infinity();
-        float best_action = -1;
+        int best_action = -1;
         for (int action = 0; action < n_game_actions_; action++)
         {
             if (actions_legality_[action] == 0)

@@ -132,13 +132,13 @@ namespace searchTrees
                 continue;
             }
             float w = wsa_[action];
-            float p = nsa_[action];
+            float p = float(nsa_[action]);
             float wa = 0.0f;
             float pa = 1e-8f;
             if (amaf_node_ptr != nullptr)
             {
                 wa = depth % 2 == 0 ? amaf_wsa_player_0[action] : amaf_wsa_player_1[action];
-                pa = depth % 2 == 0 ? amaf_nsa_player_0[action] : amaf_nsa_player_1[action];
+                pa = float(depth % 2 == 0 ? amaf_nsa_player_0[action] : amaf_nsa_player_1[action]);
             }
             float beta_action = pa / (pa + p + b_square_ref * pa * p);
             float amaf = wa / (pa + 1e-8f);

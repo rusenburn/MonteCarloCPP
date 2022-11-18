@@ -21,7 +21,7 @@ namespace searchTrees
 
         std::vector<int> out_our_actions{};
         std::vector<int> out_their_actions{};
-        int z;
+        float z;
         int i = 0;
         for (; i < simulation_count; i++)
         {

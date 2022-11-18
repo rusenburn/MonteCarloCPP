@@ -10,7 +10,7 @@ namespace searchTrees
     {
     private:
         int n_game_actions_;
-        int cuct_;
+        float cuct_;
 
         class Node
         {

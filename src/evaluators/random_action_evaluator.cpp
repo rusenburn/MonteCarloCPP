@@ -13,7 +13,7 @@ namespace evaluators
         int n_actions = state_ptr->getActionsCount();
         int player = 0;
         std::vector<int> actions_legality = state_ptr->getActionsLegality();
-        int legal_actions_count;
+        int legal_actions_count=0;
         for (int action = 0; action < n_actions; action++)
         {
             legal_actions_count += actions_legality[action];

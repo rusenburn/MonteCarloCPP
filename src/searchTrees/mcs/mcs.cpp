@@ -136,7 +136,7 @@ namespace searchTrees
 
             for (int action = 0; action < n_game_actions_; action++)
             {
-                out_action_probs[action] = action == best_action ? 1 : 0;
+                out_action_probs[action] = action == best_action ? 1.0f : 0.0f;
             }
             return;
         }
@@ -145,7 +145,7 @@ namespace searchTrees
         for (int action = 0; action < n_game_actions_; action++)
         {
             float prob = float(na_[action]) / n_;
-            float new_prob = pow(prob, 1.0f / temperature_);
+            float new_prob = powf(prob, 1.0f / temperature_);
             sum_probs += new_prob;
             out_action_probs[action] = new_prob;
         }
@@ -192,7 +192,7 @@ namespace searchTrees
             }
             else
             {
-                u = qsa + cuct_ * sqrt(log(float(n_)) / na);
+                u = qsa + cuct_ * sqrtf(logf(float(n_)) / na);
             }
 
             if (u > max_u)
@@ -209,7 +209,7 @@ namespace searchTrees
         // Should not reach this code unless something went wrong
         // Pick random action instead
         std::vector<int> best_actions{};
-        for (int action; action < n_game_actions_; action++)
+        for (int action=0; action < n_game_actions_; action++)
         {
             if (actions_legality_[action] == 1)
             {

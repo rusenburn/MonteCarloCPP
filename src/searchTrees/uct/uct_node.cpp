@@ -112,7 +112,7 @@ namespace searchTrees
             }
 
             float qsa = qsa_[action];
-            float nsa = nsa_[action];
+            float nsa = float(nsa_[action]);
             float u;
             if (nsa == 0)
             {
@@ -120,7 +120,7 @@ namespace searchTrees
             }
             else
             {
-                u = qsa_[action] + cuct_ * sqrt(log(float(n_)) / nsa);
+                u = qsa + cuct_ * sqrtf(logf(float(n_)) / nsa);
             }
             if (u > max_u)
             {
@@ -137,7 +137,7 @@ namespace searchTrees
         // Should not reach this code unless something went wrong
         // Pick random action instead
         std::vector<int> best_actions{};
-        for (int action; action < n_game_actions_; action++)
+        for (int action=0; action < n_game_actions_; action++)
         {
             if (actions_legality_[action] == 1)
             {
@@ -169,7 +169,7 @@ namespace searchTrees
 
             for (int action = 0; action < n_game_actions_; action++)
             {
-                out_actions_probs[action] = action == best_action ? 1 : 0;
+                out_actions_probs[action] = action == best_action ? 1.0f : 0.0f;
             }
             return;
         }
@@ -178,7 +178,7 @@ namespace searchTrees
         for (int action = 0; action < n_game_actions_; action++)
         {
             float prob = float(nsa_[action]) / n_;
-            float new_prob = pow(prob, 1.0f / temperature);
+            float new_prob = powf(prob, 1.0f / temperature);
             sum_probs += new_prob;
             out_actions_probs[action] = new_prob;
         }
