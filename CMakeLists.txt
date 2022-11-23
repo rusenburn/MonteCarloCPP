@@ -31,6 +31,8 @@ set(Headers
     src/common/state.hpp
     src/common/terminal_status.hpp
     src/evaluators/random_action_evaluator.hpp
+    src/games/connect4/connect4_game.hpp
+    src/games/connect4/connect4_state.hpp
     src/games/othello/othello_game.hpp
     src/games/othello/othello_state.hpp
     src/searchTrees/grave/grave_node.hpp
@@ -55,6 +57,8 @@ set(SourceFiles
     src/arena/players/uct_player.cpp
     src/arena/match.cpp
     src/evaluators/random_action_evaluator.cpp
+    src/games/connect4/connect4_game.cpp
+    src/games/connect4/connect4_state.cpp
     src/games/othello/othello_game.cpp
     src/games/othello/othello_state.cpp
     src/searchTrees/grave/grave_node.cpp

@@ -5,7 +5,7 @@
 
 #include "../src/common/player.hpp"
 #include "../src/common/game.hpp"
-#include "../src/games/othello/othello_game.hpp"
+
 namespace console
 {
 
@@ -32,6 +32,7 @@ namespace console
         common::Player *create_default_utc_player();
 
         static std::shared_ptr<common::Game> othello_game_fn();
+        static std::shared_ptr<common::Game> connect4_game_fn();
         int min_duration_in_millis = 500;
         int min_simulations = 10;
 

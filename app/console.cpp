@@ -12,7 +12,8 @@
 #include "../src/evaluators/random_action_evaluator.hpp"
 #include "../src/arena/players/random_action_player.hpp"
 #include "../src/arena/match.hpp"
-
+#include "../src/games/othello/othello_game.hpp"
+#include "../src/games/connect4/connect4_game.hpp"
 #include "console.hpp"
 
 namespace console
@@ -109,12 +110,17 @@ namespace console
             cout.clear();
             cout << "Choose a game:" << '\n';
             cout << "[ 1 ] Othello." << '\n';
+            cout << "[ 2 ] Connect4." << '\n';
             cin >> choice;
             cout << endl;
             switch (choice)
             {
             case 1:
                 game_fn_ptr = othello_game_fn;
+                break;
+            case 2:
+                memcpy(game_name,"Connect4",9);
+                game_fn_ptr = connect4_game_fn;
                 break;
             default:
                 break;
@@ -243,5 +249,9 @@ namespace console
     std::shared_ptr<common::Game> Console::othello_game_fn()
     {
         return std::make_shared<games::OthelloGame>();
+    }
+
+    std::shared_ptr<common::Game> Console::connect4_game_fn(){
+        return std::make_shared<games::Connect4Game>();
     }
 } // namespace console

@@ -10,8 +10,9 @@ namespace arena
                   << "Choose Action : ";
         std::string in;
         int action;
-        std::getline(std::cin, in);
-        std::stringstream(in) >> action;
+        std::cin>>action;
+        // std::getline(std::cin, in);
+        // std::stringstream(in) >> action;
         return action;
     }
 } // namespace arena
